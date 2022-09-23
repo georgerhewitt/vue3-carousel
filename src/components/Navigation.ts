@@ -6,7 +6,7 @@ import { defaultConfigs } from '@/partials/defaults'
 import { CarouselNav, CarouselConfig } from '../types'
 
 const Navigation = (props: any, { slots, attrs }: any) => {
-  const { next: slotNext, prev: slotPrev } = slots || {}
+  const { next: slotNext, prev: slotPrev, pause: slotPause } = slots || {}
   const config: CarouselConfig = inject('config', reactive({ ...defaultConfigs }))
   const maxSlide = inject('maxSlide', ref(1))
   const minSlide = inject('minSlide', ref(1))
@@ -21,8 +21,8 @@ const Navigation = (props: any, { slots, attrs }: any) => {
       class: [
         'carousel__prev',
         !config.wrapAround &&
-          currentSlide.value <= minSlide.value &&
-          'carousel__prev--in-active',
+        currentSlide.value <= minSlide.value &&
+        'carousel__prev--in-active',
         attrs?.class,
       ],
       'aria-label': `Navigate to previous slide`,
@@ -37,8 +37,8 @@ const Navigation = (props: any, { slots, attrs }: any) => {
       class: [
         'carousel__next',
         !config.wrapAround &&
-          currentSlide.value >= maxSlide.value &&
-          'carousel__next--in-active',
+        currentSlide.value >= maxSlide.value &&
+        'carousel__next--in-active',
         attrs?.class,
       ],
       'aria-label': `Navigate to next slide`,
@@ -46,8 +46,24 @@ const Navigation = (props: any, { slots, attrs }: any) => {
     },
     slotNext?.() || h(Icon, { name: isRTL ? 'arrowLeft' : 'arrowRight' })
   )
+  const pauseButton = h(
+    'button',
+    {
+      type: 'button',
+      class: [
+        'carousel__pause',
+        !config.wrapAround &&
+        currentSlide.value >= maxSlide.value &&
+        'carousel__pause--in-active',
+        attrs?.class,
+      ],
+      'aria-label': `Pause next slide`,
+      onClick: nav.pause,
+    },
+    slotPause?.() || h(Icon, { name: isRTL ? 'pause' : 'arrowRight' })
+  )
 
-  return [prevButton, nextButton]
+  return [prevButton, nextButton, pauseButton]
 }
 
 export default Navigation
